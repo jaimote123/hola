@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Autenticación Responsivo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --antracita: #2F2E41;
+            --gris-medio: #6E6B7B;
+            --gris-claro: #C8C6C6;
+            --blanco: #FFFFFF;
+            --azul-acento: #3F88C5;
+            --azul-oscuro: #2a5d85;
+            --sombra: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--antracita);
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 600px;
+            background: var(--blanco);
+            border-radius: 20px;
+            box-shadow: var(--sombra);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Panel decorativo */
+        .design-panel {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, var(--azul-acento), var(--azul-oscuro));
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--blanco);
+            text-align: center;
+        }
+
+        .design-panel h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            z-index: 2;
+        }
+
+        .design-panel p {
+            font-size: 1rem;
+            line-height: 1.5;
+            max-width: 500px;
+            z-index: 2;
+        }
+
+        .decoration {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .decoration.circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: var(--blanco);
+        }
+
+        .decoration.square {
+            width: 120px;
+            height: 120px;
+            transform: rotate(45deg);
+            background: var(--blanco);
+        }
+
+        .decoration-1 {
+            top: -50px;
+            left: -50px;
+        }
+
+        .decoration-2 {
+            bottom: -30px;
+            right: -30px;
+        }
+
+        /* Formularios */
+        .form-container {
+            width: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .form-box {
+            position: absolute;
+            width: calc(100% - 40px);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+
+        .form-box.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .form-title {
+            color: var(--antracita);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gris-medio);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            border: 2px solid var(--gris-claro);
+            border-radius: 8px;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+            color: var(--antracita);
+        }
+
+        .input-field:focus {
+            border-color: var(--azul-acento);
+            box-shadow: 0 0 0 3px rgba(63, 136, 197, 0.2);
+        }
+
+        .input-field::placeholder {
+            color: var(--gris-medio);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--azul-acento);
+        }
+
+        .checkbox-group label {
+            color: var(--gris-medio);
+            font-size: 14px;
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            color: var(--azul-acento);
+            font-size: 14px;
+            text-decoration: none;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .form-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--azul-acento);
+            border: none;
+            border-radius: 8px;
+            color: var(--blanco);
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(63, 136, 197, 0.3);
+        }
+
+        .form-btn:hover {
+            background: var(--azul-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(63, 136, 197, 0.4);
+        }
+
+        .form-link {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--gris-medio);
+            font-size: 15px;
+        }
+
+        .form-link a {
+            color: var(--azul-acento);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .form-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gris-medio);
+            font-size: 14px;
+            border-top: 1px solid var(--gris-claro);
+            margin-top: auto;
+        }
+
+        /* Responsive - Tablet y Desktop */
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                min-height: 700px;
+            }
+            
+            .design-panel {
+                width: 45%;
+                height: 100%;
+                padding: 40px;
+            }
+            
+            .form-container {
+                width: 55%;
+                padding: 60px 50px;
+                justify-content: center;
+            }
+            
+            .form-box {
+                width: calc(100% - 100px);
+            }
+            
+            .design-panel h1 {
+                font-size: 2.5rem;
+            }
+            
+            .design-panel p {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Desktop grande */
+        @media (min-width: 992px) {
+            .design-panel {
+                width: 40%;
+            }
+            
+            .form-container {
+                width: 60%;
+                padding: 60px 80px;
+            }
+            
+            .form-title {
+                font-size: 2rem;
+            }
+            
+            .decoration.circle {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .decoration.square {
+                width: 180px;
+                height: 180px;
+            }
+        }
+
+        /* Pantallas pequeñas */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 15px;
+            }
+            
+            .design-panel {
+                height: 180px;
+                padding: 15px;
+            }
+            
+            .design-panel h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-title {
+                font-size: 1.6rem;
+            }
+            
+            .input-field {
+                padding: 12px 12px 12px 40px;
+                font-size: 15px;
+            }
+            
+            .form-btn {
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+
+        /* Pantallas muy pequeñas */
+        @media (max-width: 360px) {
+            .form-title {
+                font-size: 1.5rem;
+            }
+            
+            .design-panel h1 {
+                font-size: 1.6rem;
+            }
+            
+            .design-panel p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Panel decorativo -->
+        <div class="design-panel">
+            <div class="decoration circle decoration-1"></div>
+            <div class="decoration square decoration-2"></div>
+            <h1 id="panel-title">¡Bienvenido!</h1>
+            <p id="panel-text">Ingresa a tu cuenta para acceder a todos nuestros servicios</p>
+        </div>
+        
+        <!-- Contenedor de formularios -->
+        <div class="form-container">
+            <!-- Formulario de Login -->
+            <div class="form-box active" id="login-form">
+                <h1 class="form-title">¡Bienvenido!</h1>
+                
+                <form id="loginForm">
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" class="input-field" placeholder="correo@electronico.com" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" class="input-field" placeholder="Contraseña" required>
+                    </div>
+                    
+                    <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                    
+                    <button type="submit" class="form-btn">Iniciar sesión</button>
+                </form>
+                
+                <p class="form-link">¿Aún no tienes una cuenta? <a href="#" id="go-to-register">Únete aquí</a></p>
+            </div>
+            
+            <!-- Formulario de Registro -->
+            <div class="form-box" id="register-form">
+                <h1 class="form-title">¡Regístrate!</h1>
+                
+                <form id="registerForm">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" class="input-field" placeholder="Nombres y Apellidos" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-address-card"></i>
+                        <input type="text" class="input-field" placeholder="Tipo de identificación" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-id-card"></i>
+                        <input type="text" class="input-field" placeholder="Número de identificación" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-birthday-cake"></i>
+                        <input type="date" class="input-field" placeholder="Fecha de nacimiento" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" class="input-field" placeholder="correo@electronico.com" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" class="input-field" placeholder="Celular 1" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" class="input-field" placeholder="Celular 2 (opcional)">
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" class="input-field" placeholder="Contraseña" required>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">Acepto los términos y condiciones</label>
+                    </div>
+                    
+                    <button type="submit" class="form-btn">Crear cuenta</button>
+                </form>
+                
+                <p class="form-link">¿Ya tienes una cuenta? <a href="#" id="go-to-login">Inicia sesión aquí</a></p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            © 2023 Sistema de Autenticación. Todos los derechos reservados.
+        </div>
+    </div>
+
+    <script>
+        // Cambiar entre formularios
+        document.getElementById('go-to-register').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('register-form').classList.add('active');
+            document.getElementById('panel-title').textContent = '¡Crea tu cuenta!';
+            document.getElementById('panel-text').textContent = 'Únete a nuestra comunidad y accede a beneficios exclusivos';
+        });
+
+        document.getElementById('go-to-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('register-form').classList.remove('active');
+            document.getElementById('login-form').classList.add('active');
+            document.getElementById('panel-title').textContent = '¡Bienvenido!';
+            document.getElementById('panel-text').textContent = 'Ingresa a tu cuenta para acceder a todos nuestros servicios';
+        });
+
+        // Manejo de formulario de login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            
+            if (!email || !password) {
+                alert('Por favor, complete todos los campos');
+                return;
+            }
+            
+            const btn = this.querySelector('.form-btn');
+            btn.textContent = 'Iniciando sesión...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                alert(`¡Bienvenido de nuevo!\nCorreo: ${email}`);
+                btn.textContent = 'Iniciar sesión';
+                btn.disabled = false;
+            }, 1500);
+        });
+
+        // Manejo de formulario de registro
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fullName = this.querySelector('input[placeholder="Nombres y Apellidos"]').value;
+            const email = this.querySelector('input[type="email"]').value;
+            
+            let valid = true;
+            this.querySelectorAll('input[required]').forEach(input => {
+                if (!input.value) valid = false;
+            });
+            
+            if (!valid) {
+                alert('Por favor, complete todos los campos obligatorios');
+                return;
+            }
+            
+            const btn = this.querySelector('.form-btn');
+            btn.textContent = 'Creando cuenta...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                alert(`¡Cuenta creada con éxito!\nBienvenido/a ${fullName}\nCorreo: ${email}`);
+                btn.textContent = 'Crear cuenta';
+                btn.disabled = false;
+                
+                // Volver al login después de registro
+                document.getElementById('register-form').classList.remove('active');
+                document.getElementById('login-form').classList.add('active');
+                document.getElementById('panel-title').textContent = '¡Bienvenido!';
+                document.getElementById('panel-text').textContent = 'Ingresa a tu cuenta para acceder a todos nuestros servicios';
+                
+                // Limpiar formulario
+                this.reset();
+            }, 2000);
+        });
+
+        // Ajuste para dispositivos móviles al cargar
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth < 768) {
+                document.getElementById('panel-title').style.fontSize = '1.8rem';
+                document.querySelector('.form-title').style.fontSize = '1.6rem';
+            }
+        });
+    </script>
+</body>
+</html>
